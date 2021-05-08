@@ -5,7 +5,7 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv(r"C:\Users\abstf\PycharmProjects\ProjectThreeAI\aug_train.csv")
+df = pd.read_csv(r"aug_train.csv")
 #skewed too many males
 del df['gender']
 del df['enrollee_id']
@@ -26,24 +26,19 @@ Target=validation.pop('target')
 validationTarget=tf.keras.utils.to_categorical(Target)
 def get_compiled_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='tanh'),
-        tf.keras.layers.Dense(100, activation='tanh'),
-        tf.keras.layers.Dense(100, activation='tanh'),
-        tf.keras.layers.Dense(2, activation='softmax')
+        tf.keras.layers.Dense(64, activation=tf.nn.tanh),
+        tf.keras.layers.Dense(30, activation=tf.nn.tanh),
+        tf.keras.layers.Dense(2, activation=tf.nn.softmax)
     ])
-
     model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001),
-                 # loss=tf.keras.losses.MeanAbsolutePercentageError(),
-                  loss='mean_squared_error',
-                  metrics=['accuracy'])
+                  loss=tf.keras.losses.mean_squared_error,
+                  metrics=['categorical_accuracy'])
     return model
-
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=r'C:\Users\abstf\PycharmProjects\ProjectThreeAI',
+checkpoint_path="mymodel/cp.ckpt"
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                  save_weights_only=True,
                                                  verbose=1)
 model = get_compiled_model()
-model.fit(train, trainTarget, epochs=200, validation_data=(test,testTarget),
-         batch_size=100,callbacks=[cp_callback])
-
-#model.fit(test,testTarget,epochs=15,batch_size=10)
+model.fit(train, trainTarget, epochs=15, validation_data=(test,testTarget),
+         batch_size=10,callbacks=[cp_callback])
 model.evaluate(validation, validationTarget, batch_size=1)
