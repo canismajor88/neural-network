@@ -34,11 +34,11 @@ def get_compiled_model():
                   loss=tf.keras.losses.mean_squared_error,
                   metrics=['categorical_accuracy'])
     return model
-checkpoint_path="mymodel/cp.ckpt"
+checkpoint_path="mymodelcp.ckpt"
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                  save_weights_only=True,
                                                  verbose=1)
 model = get_compiled_model()
-model.fit(train, trainTarget, epochs=15, validation_data=(test,testTarget),
+model.fit(train, trainTarget, epochs=20, validation_data=(test,testTarget),
          batch_size=10,callbacks=[cp_callback])
 model.evaluate(validation, validationTarget, batch_size=1)
